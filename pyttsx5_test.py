@@ -3,14 +3,14 @@
 from io import BytesIO
 import time
 
-import pyttsx4
+import pyttsx5
 
 import os
 
 
 def test_save_to_file():
     print('test_save_to_file start')
-    engine = pyttsx4.init()
+    engine = pyttsx5.init()
     ############
     file_path = os.path.dirname(__file__)+'/test.wav'
     engine.save_to_file('Hello World', file_path)
@@ -19,8 +19,8 @@ def test_save_to_file():
 
 
 def test_say():
-    # engine = pyttsx4.init('coqui_ai_tts') # object creation
-    engine = pyttsx4.init()
+    # engine = pyttsx5.init('coqui_ai_tts') # object creation
+    engine = pyttsx5.init()
 
     ############
     engine.setProperty('pitch', -20)
@@ -33,7 +33,7 @@ def test_say():
 
 
 def test_2():
-    engine = pyttsx4.init()
+    engine = pyttsx5.init()
 
     engine.setProperty('pitch', 0)
     # engine.save_to_file('Hello World', 'test.wav')
@@ -53,7 +53,7 @@ def test_2():
 
 def test_3():
 
-    engine = pyttsx4.init()
+    engine = pyttsx5.init()
 
     b = BytesIO()
     engine.save_to_file('Hello World', b)
@@ -121,7 +121,7 @@ def test_3():
 
 
 def test_qtts():
-    engine = pyttsx4.init('coqui_ai_tts')
+    engine = pyttsx5.init('coqui_ai_tts')
     engine.say('Hello World.')
     engine.runAndWait()
 
@@ -129,7 +129,7 @@ def test_qtts():
     engine.runAndWait()
 
 def test_qtts2():
-    engine = pyttsx4.init('coqui_ai_tts')
+    engine = pyttsx5.init('coqui_ai_tts')
     engine.setProperty('speaker_wav', './ide-guide.wav')
     engine.say('Hello World.')
     engine.runAndWait()
@@ -138,7 +138,7 @@ def test_qtts2():
     engine.runAndWait()
 
 def test_qtts3():
-    engine = pyttsx4.init('coqui_ai_tts')
+    engine = pyttsx5.init('coqui_ai_tts')
     vs = engine.getProperty('voices')
     voice_chinese='tts_models/zh-CN/baker/tacotron2-DDC-GST'
     engine.setProperty('voice', voice_chinese)
@@ -151,7 +151,7 @@ def test_qtts3():
     engine.runAndWait()
 
 def test_qtts_to_file():
-    engine = pyttsx4.init('coqui_ai_tts')
+    engine = pyttsx5.init('coqui_ai_tts')
     engine.save_to_file('Hello World.', 'test1.wav')
     engine.runAndWait()
 
@@ -162,7 +162,7 @@ def test_qtts_to_file():
 
 
 def test_qtts_to_file2():
-    engine = pyttsx4.init('coqui_ai_tts')
+    engine = pyttsx5.init('coqui_ai_tts')
     engine.save_to_file('what a crazy man.', 'what_crazy_man.wav')
     engine.runAndWait()
     engine.save_to_file('this is an apple.', 'this_is_an_apple.wav')
@@ -172,7 +172,7 @@ def test_qtts_to_file2():
 
 
 def test1_tts():
-    engine = pyttsx4.init('coqui_ai_tts')
+    engine = pyttsx5.init('coqui_ai_tts')
     engine.setProperty('speaker_wav', './docs/i_have_a_dream_10s.wav')
 
     engine.save_to_file('this is an english text to voice test, listen it carefully and tell who i am.', 'test_mtk.wav')

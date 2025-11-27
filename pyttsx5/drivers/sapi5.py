@@ -32,7 +32,7 @@ def buildDriver(proxy):
 
 
 class SAPI5Driver(object):
-    def __init__(self, proxy):
+    def __init__(self, proxy, output_format=SpeechLib.SAFT22kHz16BitStereo, rate=200):
         self._tts = comtypes.client.CreateObject('SAPI.SPVoice')
         # all events
         self._tts.EventInterests = 33790
@@ -44,7 +44,8 @@ class SAPI5Driver(object):
         self._speaking = False
         self._stopping = False
         # initial rate
-        self._rateWpm = 200
+        self._rateWpm = rate
+        self._output_format = output_format
         self.setProperty('voice', self.getProperty('voice'))
 
         #-10=>+10
@@ -74,6 +75,9 @@ class SAPI5Driver(object):
 
         cwd = os.getcwd()
         stream = comtypes.client.CreateObject('SAPI.SPFileStream')
+        format = comtypes.client.CreateObject("SAPI.SpAudioFormat")
+        format.Type = self._output_format
+        stream.Format = format
         stream.Open(filename, SpeechLib.SSFMCreateForWrite)
 
         # in case there is no outputstream, the call to AudioOutputStream will fail
@@ -94,8 +98,8 @@ class SAPI5Driver(object):
             except Exception as e:
                 print('set None no no-output stream machine:', e)
                 pass
-        stream.close()
-        os.chdir(cwd)
+            stream.close()
+            os.chdir(cwd)
 
     def to_memory(self, text, olist):
         stream = comtypes.client.CreateObject('SAPI.SpMemoryStream')
@@ -128,7 +132,7 @@ class SAPI5Driver(object):
             return self._tts.Volume / 100.0
         elif name == 'pitch':
             return self.pitch
-            #print("Pitch adjustment not supported when using SAPI5")
+        #print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -139,17 +143,6 @@ class SAPI5Driver(object):
             a, b = E_REG.get(value, E_REG[MSMARY])
             self._tts.Rate = int(math.log(self._rateWpm / a, b))
         elif name == 'rate':
-            id_ = self._tts.Voice.Id
-            a, b = E_REG.get(id_, E_REG[MSMARY])
-            try:
-                rate = int(math.log(value / a, b))
-                if rate<-10:
-                    rate = -10
-                if rate>10:
-                    rate = 10
-                self._tts.Rate = int(math.log(value / a, b))
-            except TypeError as e:
-                raise ValueError(str(e))
             self._rateWpm = value
         elif name == 'volume':
             try:
@@ -160,6 +153,8 @@ class SAPI5Driver(object):
             #-10 ->10
             self.pitch = value
             self.pitch_str = '<pitch absmiddle="'+str(value)+'"/>'
+        elif name == 'format':
+            self._output_format = value
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -170,8 +165,8 @@ class SAPI5Driver(object):
             if first:
                 self._proxy.setBusy(False)
                 first = False
-            pythoncom.PumpWaitingMessages()
-            time.sleep(0.05)
+                pythoncom.PumpWaitingMessages()
+                time.sleep(0.05)
 
     def endLoop(self):
         self._looping = False
@@ -198,6 +193,6 @@ class SAPI5DriverEventSink(object):
         d = self._driver
         if d._speaking:
             d._proxy.notify('finished-utterance', completed=not d._stopping)
-        d._speaking = False
-        d._stopping = False
-        d._proxy.setBusy(False)
+            d._speaking = False
+            d._stopping = False
+            d._proxy.setBusy(False)
